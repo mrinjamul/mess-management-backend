@@ -1,0 +1,14 @@
+#!/bin/bash
+
+./tools/build.sh
+./tools/push.sh
+
+# deploy by hook
+
+export $(grep -v '^#' .env | xargs -d '\n')
+echo "Deploying via Deploy Hook $DEPLOY_HOOK" # Make a request to the URL
+curlRun="curl -s $DEPLOY_HOOK"
+eval $curlRun
+
+echo ""
+echo "Done!"

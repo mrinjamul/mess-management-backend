@@ -1,0 +1,21 @@
+body {
+  height: 100%;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+/* Custom SCSS for feature component with Bootstrap icon */
+.feature {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  width: 4rem;
+  font-size: 2rem;
+}
+
+/* Section padding */
+.about {
+  padding-top: 9rem;
+  padding-bottom: 9rem;
+}
