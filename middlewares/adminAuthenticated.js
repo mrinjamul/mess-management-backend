@@ -1,7 +1,7 @@
 const jwt = require("../helpers/jwt");
 const constants = require("../constants");
 
-const authenticated = (req, res, next) => {
+const adminAuthenticated = (req, res, next) => {
   var token;
   try {
     token = req.headers.authorization.split(" ")[1];
@@ -30,6 +30,13 @@ const authenticated = (req, res, next) => {
       error: "invalid token",
       message: "Unauthorized",
     });
+  }
+  if (decodedToken.role != "admin" || decodedToken.accessLevel < 3) {
+    res.status(constants.http.StatusUnauthorized).json({
+      code: constants.http.StatusUnauthorized,
+      error: "admin required",
+      message: "Unauthorized",
+    });
   } else {
     // set payload to the request
     req.user = decodedToken;
@@ -37,4 +44,4 @@ const authenticated = (req, res, next) => {
   }
 };
 
-module.exports = authenticated;
+module.exports = adminAuthenticated;

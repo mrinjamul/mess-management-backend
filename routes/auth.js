@@ -17,25 +17,6 @@ const { CreateUser, GetUserByMobile } = require("../controllers/users");
 
 // SignUp route
 router.post("/signup", async function (req, res, next) {
-  // get token
-  var token;
-  try {
-    token = req.headers.authorization.split(" ")[1];
-  } catch (err) {
-    // console.log("error: failed to get token from header");
-  }
-  if (!token) {
-    // get cookie
-    token = req.cookies.token;
-  }
-  if (token) {
-    res.status(constants.http.StatusOK).json({
-      status: false,
-      message: "user already logged in",
-    });
-    return;
-  }
-
   const { mobile } = req.body;
   // check for required values;
   if (!mobile) {

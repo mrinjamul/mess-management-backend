@@ -3,6 +3,9 @@ var router = express.Router();
 
 const constants = require("../../constants");
 
+const authenticated = require("../../middlewares/authenticated");
+const adminAuthenticated = require("../../middlewares/adminAuthenticated");
+
 const {
   CreateRoutine,
   GetRoutines,
@@ -14,7 +17,7 @@ const {
 /* V1 API routes */
 
 // Get Routines
-router.get("/", async function (req, res, next) {
+router.get("/", authenticated, async function (req, res, next) {
   const routines = await GetRoutines();
   if (!routines) {
     res.status(constants.http.StatusNotFound).json({
@@ -33,7 +36,7 @@ router.get("/", async function (req, res, next) {
 });
 
 // Create Routine
-router.post("/", async function (req, res, next) {
+router.post("/", adminAuthenticated, async function (req, res, next) {
   const routine = await CreateRoutine(req);
 
   res.status(constants.http.StatusOK).json({
@@ -43,7 +46,7 @@ router.post("/", async function (req, res, next) {
   });
 });
 // Get Routine
-router.get("/:day", async function (req, res, next) {
+router.get("/:day", authenticated, async function (req, res, next) {
   const day = req.params.day;
   const menu = await GetRoutineByDay(day);
   if (!menu) {
@@ -63,7 +66,7 @@ router.get("/:day", async function (req, res, next) {
   });
 });
 // Update Routine
-router.put("/:id", async function (req, res, next) {
+router.put("/:id", adminAuthenticated, async function (req, res, next) {
   const id = req.params.id;
 
   const { day, lunch, dinner } = req.body;
@@ -87,7 +90,7 @@ router.put("/:id", async function (req, res, next) {
   });
 });
 // Delete Routine
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:id", adminAuthenticated, async function (req, res, next) {
   const id = req.params.id;
 
   const menu = await DeleteRoutineByID(id);

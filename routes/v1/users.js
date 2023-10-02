@@ -14,10 +14,13 @@ const {
   DeleteUserByMobile,
 } = require("../../controllers/users");
 
+const authenticated = require("../../middlewares/authenticated");
+const adminAuthenticated = require("../../middlewares/adminAuthenticated");
+
 /* V1 API routes */
 
 // Get all users
-router.get("/", async function (req, res, next) {
+router.get("/", authenticated, async function (req, res, next) {
   const users = await GetAllUser();
 
   if (!users) {
@@ -36,7 +39,7 @@ router.get("/", async function (req, res, next) {
 });
 
 // Create a user
-router.post("/", async function (req, res, next) {
+router.post("/", adminAuthenticated, async function (req, res, next) {
   const { fullName, year, advance, mobile, password } = req.body;
   // check for required values;
   if (!mobile) {
@@ -72,11 +75,22 @@ router.post("/", async function (req, res, next) {
 });
 
 // get a user
-router.get("/:mobile", async (req, res, next) => {
+router.get("/:mobile", authenticated, async (req, res, next) => {
   const mobile = req.params.mobile;
 
-  const user = await GetUserByMobile(mobile);
+  // get user payload from middleware
+  const userPayload = req.user;
+  if (!userPayload) {
+    res.status(constants.http.StatusInternalServerError).json({
+      status: false,
+      error: "internal server error",
+      message: "failed to get user info",
+      data: null,
+    });
+    return;
+  }
 
+  const user = await GetUserByMobile(mobile);
   if (!user) {
     res.status(constants.http.StatusNotFound).json({
       status: false,
@@ -84,6 +98,16 @@ router.get("/:mobile", async (req, res, next) => {
       message: "user doesn't exists",
       data: null,
     });
+  }
+
+  if (userPayload.role !== "admin" && userPayload.mobile != user.mobile) {
+    res.status(constants.http.StatusNotFound).json({
+      status: false,
+      error: "not found",
+      message: "permission denied",
+      data: null,
+    });
+    return;
   }
 
   const usr = maskUser(user);
@@ -95,8 +119,31 @@ router.get("/:mobile", async (req, res, next) => {
   });
 });
 // Update a user
-router.put("/:mobile", async (req, res, next) => {
+router.put("/:mobile", authenticated, async (req, res, next) => {
   const mobile = req.params.mobile;
+
+  const userEntry = await GetUserByMobile(mobile);
+
+  // get user payload from middleware
+  const userPayload = req.user;
+  if (!userPayload) {
+    res.status(constants.http.StatusInternalServerError).json({
+      status: false,
+      error: "internal server error",
+      message: "failed to get user info",
+      data: null,
+    });
+    return;
+  }
+  if (userPayload.role !== "admin" && userPayload.mobile != userEntry.mobile) {
+    res.status(constants.http.StatusNotFound).json({
+      status: false,
+      error: "not found",
+      message: "permission denied",
+      data: null,
+    });
+    return;
+  }
 
   const user = await UpdateUserByMobile(mobile, req.body);
 
@@ -118,7 +165,7 @@ router.put("/:mobile", async (req, res, next) => {
   });
 });
 // Delete a user
-router.delete("/:mobile", async (req, res, next) => {
+router.delete("/:mobile", adminAuthenticated, async (req, res, next) => {
   const mobile = req.params.mobile;
 
   const user = await DeleteUserByMobile(mobile);
