@@ -18,6 +18,7 @@ const adminAuthenticated = (req, res, next) => {
       code: constants.http.StatusUnauthorized,
       error: "token not provided",
       message: "Unauthorized",
+      data: null,
     });
   }
 
@@ -29,6 +30,7 @@ const adminAuthenticated = (req, res, next) => {
       code: constants.http.StatusUnauthorized,
       error: "invalid token",
       message: "Unauthorized",
+      data: null,
     });
   }
   if (decodedToken.role != "admin" || decodedToken.accessLevel < 3) {
@@ -36,6 +38,7 @@ const adminAuthenticated = (req, res, next) => {
       code: constants.http.StatusUnauthorized,
       error: "admin required",
       message: "Unauthorized",
+      data: null,
     });
   } else {
     // set payload to the request

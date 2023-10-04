@@ -42,7 +42,7 @@ router.post("/", adminAuthenticated, async function (req, res, next) {
   res.status(constants.http.StatusOK).json({
     status: true,
     message: "success",
-    routine: routine,
+    data: routine,
   });
 });
 // Get Routine
@@ -54,7 +54,7 @@ router.get("/:day", authenticated, async function (req, res, next) {
       status: false,
       error: "not found",
       message: "menu not found",
-      routine: null,
+      data: null,
     });
     return;
   }
@@ -62,7 +62,7 @@ router.get("/:day", authenticated, async function (req, res, next) {
   res.status(constants.http.StatusOK).json({
     status: true,
     message: "success",
-    routine: menu,
+    data: menu,
   });
 });
 // Update Routine
@@ -78,7 +78,7 @@ router.put("/:id", adminAuthenticated, async function (req, res, next) {
       status: false,
       error: "not found",
       message: "menu not found",
-      routine: null,
+      data: null,
     });
     return;
   }
@@ -86,7 +86,7 @@ router.put("/:id", adminAuthenticated, async function (req, res, next) {
   res.status(constants.http.StatusOK).json({
     status: true,
     message: "success",
-    routine: menu,
+    data: menu,
   });
 });
 // Delete Routine
@@ -100,7 +100,7 @@ router.delete("/:id", adminAuthenticated, async function (req, res, next) {
       status: false,
       error: "not found",
       message: "menu not found",
-      routine: null,
+      data: null,
     });
     return;
   }
@@ -108,7 +108,7 @@ router.delete("/:id", adminAuthenticated, async function (req, res, next) {
   res.status(constants.http.StatusOK).json({
     status: true,
     message: "success",
-    routine: menu,
+    data: menu,
   });
 });
 
