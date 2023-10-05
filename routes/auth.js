@@ -23,7 +23,7 @@ router.post("/signup", async function (req, res, next) {
     res.status(constants.http.StatusBadRequest).json({
       code: constants.http.StatusBadRequest,
       error: "Bad Request",
-      message: "mobile fields",
+      message: "Mobile Number required",
     });
     return;
   }
@@ -35,7 +35,7 @@ router.post("/signup", async function (req, res, next) {
     res.status(constants.http.StatusInternalServerError).json({
       status: false,
       error: "something went wrong",
-      message: "user already exists",
+      message: "User already exists",
       data: null,
     });
     return;
@@ -45,7 +45,7 @@ router.post("/signup", async function (req, res, next) {
 
   res.status(constants.http.StatusCreated).json({
     status: true,
-    message: "user created successfully.",
+    message: "User created successfully.",
     data: usr,
   });
 });
@@ -58,7 +58,7 @@ router.post("/login", async function (req, res, next) {
     res.status(constants.http.StatusBadRequest).json({
       status: false,
       error: "Bad Request",
-      message: "mobile no is missing",
+      message: "Mobile Number missing",
       data: null,
     });
     return;
@@ -70,7 +70,7 @@ router.post("/login", async function (req, res, next) {
     res.status(constants.http.StatusNotFound).json({
       status: false,
       error: "not found",
-      message: "user does not exists",
+      message: "User not found",
       data: null,
     });
     return;
@@ -90,7 +90,7 @@ router.post("/login", async function (req, res, next) {
     const usr = maskUser(user);
     res.status(constants.http.StatusOK).json({
       status: true,
-      message: "user already logged in",
+      message: "User already logged in",
       token: token,
       data: usr,
     });
@@ -108,7 +108,7 @@ router.post("/login", async function (req, res, next) {
     res.cookie("token", token, cookieConfig);
     res.status(constants.http.StatusOK).json({
       status: true,
-      message: "login success",
+      message: "Logged in successfully",
       token: token,
       data: usr,
     });
@@ -128,7 +128,7 @@ router.post("/login", async function (req, res, next) {
       res.cookie("token", token, cookieConfig);
       res.status(constants.http.StatusOK).json({
         status: true,
-        message: "login success",
+        message: "logged in successfully",
         token: token,
         data: usr,
       });
@@ -147,7 +147,7 @@ router.post("/login", async function (req, res, next) {
       res.cookie("token", token, cookieConfig);
       res.status(constants.http.StatusOK).json({
         status: true,
-        message: "login success",
+        message: "logged in successfully",
         token: token,
         data: usr,
       });
@@ -156,7 +156,7 @@ router.post("/login", async function (req, res, next) {
       res.status(constants.http.StatusBadRequest).json({
         status: false,
         error: "invalid request",
-        message: "invalid password",
+        message: "Invalid password",
         data: null,
       });
       return;
@@ -170,14 +170,14 @@ router.get("/logout", function (req, res, next) {
   const token = req.cookies.token;
   if (!token) {
     res.status(constants.http.StatusOK).json({
-      message: "user not logged in",
+      message: "User not logged in",
     });
     return;
   }
   // clear token cookie
   res.clearCookie("token");
   res.status(constants.http.StatusOK).json({
-    message: "logout successfully",
+    message: "Logout successfully",
   });
 });
 

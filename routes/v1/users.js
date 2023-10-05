@@ -46,7 +46,7 @@ router.post("/", adminAuthenticated, async function (req, res, next) {
     res.status(constants.http.StatusBadRequest).json({
       status: false,
       error: "Bad Request",
-      message: "mobile no fields",
+      message: "Mobile Number erequired",
       data: null,
     });
     return;
@@ -59,7 +59,7 @@ router.post("/", adminAuthenticated, async function (req, res, next) {
     res.status(constants.http.StatusInternalServerError).json({
       status: false,
       error: "something went wrong",
-      message: "user already exists",
+      message: "User already exists",
       data: null,
     });
     return;
@@ -69,7 +69,7 @@ router.post("/", adminAuthenticated, async function (req, res, next) {
 
   res.status(constants.http.StatusCreated).json({
     status: true,
-    message: "success",
+    message: "User created successfully",
     data: usr,
   });
 });
@@ -84,7 +84,7 @@ router.get("/:mobile", authenticated, async (req, res, next) => {
     res.status(constants.http.StatusInternalServerError).json({
       status: false,
       error: "internal server error",
-      message: "failed to get user info",
+      message: "Failed to get user info",
       data: null,
     });
     return;
@@ -95,7 +95,7 @@ router.get("/:mobile", authenticated, async (req, res, next) => {
     res.status(constants.http.StatusNotFound).json({
       status: false,
       error: "not found",
-      message: "user doesn't exists",
+      message: "User doesn't exists",
       data: null,
     });
   }
@@ -130,7 +130,7 @@ router.put("/:mobile", authenticated, async (req, res, next) => {
     res.status(constants.http.StatusInternalServerError).json({
       status: false,
       error: "internal server error",
-      message: "failed to get user info",
+      message: "Failed to get user info",
       data: null,
     });
     return;
@@ -151,7 +151,7 @@ router.put("/:mobile", authenticated, async (req, res, next) => {
     res.status(constants.http.StatusNotFound).json({
       status: false,
       error: "not found",
-      message: "user doesn't exists",
+      message: "User doesn't exists",
       data: null,
     });
   }
@@ -174,7 +174,7 @@ router.delete("/:mobile", adminAuthenticated, async (req, res, next) => {
     res.status(constants.http.StatusNotFound).json({
       status: false,
       error: "not found",
-      message: "user doesn't exists",
+      message: "User doesn't exists",
       data: null,
     });
   }
