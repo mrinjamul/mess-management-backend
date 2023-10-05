@@ -85,7 +85,12 @@ router.post("/login", async function (req, res, next) {
   }
   if (token) {
     var verifyOpts = jwt.getVerifyingOptions();
-    const decodedToken = jwt.verifyToken(token, verifyOpts);
+    var decodedToken;
+    try {
+      decodedToken = jwt.verifyToken(token, verifyOpts);
+    } catch (error) {
+      console.log(error);
+    }
     if (decodedToken) {
       const usr = maskUser(user);
       res.status(constants.http.StatusOK).json({

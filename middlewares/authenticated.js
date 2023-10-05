@@ -19,7 +19,12 @@ const authenticated = (req, res, next) => {
   }
 
   var verifyOpts = jwt.getVerifyingOptions();
-  const decodedToken = jwt.verifyToken(token, verifyOpts);
+  var decodedToken;
+  try {
+    decodedToken = jwt.verifyToken(token, verifyOpts);
+  } catch (error) {
+    console.log(error);
+  }
   // decodedToken is null
   if (!decodedToken) {
     res.status(constants.http.StatusUnauthorized).json({

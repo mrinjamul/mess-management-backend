@@ -3,6 +3,8 @@ var router = express.Router();
 
 constants = require("../../constants");
 
+const bcrypt = require("../../helpers/bcrypt");
+
 const { maskUser } = require("../../helpers/utils");
 
 const {
@@ -11,6 +13,7 @@ const {
   GetUserByID,
   GetUserByMobile,
   UpdateUserByMobile,
+  ChangePasswordByMobile,
   DeleteUserByMobile,
 } = require("../../controllers/users");
 
@@ -164,6 +167,84 @@ router.put("/:mobile", authenticated, async (req, res, next) => {
     data: usr,
   });
 });
+
+// Change password
+router.patch("/:mobile", authenticated, async (req, res, next) => {
+  const mobile = req.params.mobile;
+  // Get user informations
+  const user = await GetUserByMobile(mobile);
+  if (!user) {
+    res.status(constants.http.StatusNotFound).json({
+      status: false,
+      message: "User does not exists",
+      data: null,
+    });
+    return;
+  }
+
+  // if (user.role == "user") {
+  //   res.status(constants.http.StatusOK).json({
+  //     status: true,
+  //     message: "Password is not required",
+  //     data: null,
+  //   });
+  //   return;
+  // }
+
+  // get fields from request
+  const { oldPassword, password } = req.body;
+
+  if (user.password) {
+    if (!oldPassword) {
+      res.status(constants.http.StatusBadRequest).json({
+        status: false,
+        message: "old password is missing",
+        data: null,
+      });
+      return;
+    }
+  }
+
+  if (!password) {
+    res.status(constants.http.StatusBadRequest).json({
+      status: false,
+      message: "current password is missing",
+      data: null,
+    });
+    return;
+  }
+
+  if (user.password) {
+    const isMatched = await bcrypt.VerifyHash(oldPassword, user.password);
+    if (!isMatched) {
+      res.status(constants.http.StatusBadRequest).json({
+        status: false,
+        message: "Invalid Password",
+        data: null,
+      });
+      return;
+    }
+  }
+
+  const newHash = await bcrypt.HashAndSalt(password);
+
+  const usr = await ChangePasswordByMobile(mobile, newHash);
+  if (!usr) {
+    res.status(constants.http.StatusInternalServerError).json({
+      status: false,
+      message: "Failed to update password",
+      data: null,
+    });
+    return;
+  }
+
+  res.status(constants.http.StatusOK).json({
+    status: true,
+    message: "Password updated successfully",
+    data: null,
+  });
+});
+
 // Delete a user
 router.delete("/:mobile", adminAuthenticated, async (req, res, next) => {
   const mobile = req.params.mobile;

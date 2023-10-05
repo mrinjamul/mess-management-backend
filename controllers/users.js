@@ -109,6 +109,22 @@ const UpdateUserByMobile = async (mobile, user) => {
   }
 };
 
+// ChangePasswordByMobile: change a password for a user
+const ChangePasswordByMobile = async (mobile, password) => {
+  try {
+    const u = await User.findOne({ mobile: mobile });
+    return await User.findByIdAndUpdate(
+      u._id,
+      { password: password },
+      {
+        new: true,
+      }
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 // DeleteUserByID: delete a user from db
 const DeleteUserByID = async (id) => {
   try {
@@ -136,6 +152,7 @@ module.exports = {
   GetUserByMobile,
   UpdateUserByID,
   UpdateUserByMobile,
+  ChangePasswordByMobile,
   DeleteUserByID,
   DeleteUserByMobile,
 };
