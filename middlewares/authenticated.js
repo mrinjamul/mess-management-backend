@@ -11,6 +11,7 @@ const authenticated = (req, res, next) => {
   // if unable to get token
   if (!token) {
     res.status(constants.http.StatusUnauthorized).json({
+      status: false,
       code: constants.http.StatusUnauthorized,
       error: "token not provided",
       message: "Unauthorized",
@@ -28,6 +29,7 @@ const authenticated = (req, res, next) => {
   // decodedToken is null
   if (!decodedToken) {
     res.status(constants.http.StatusUnauthorized).json({
+      status: false,
       code: constants.http.StatusUnauthorized,
       error: "invalid token",
       message: "Unauthorized",

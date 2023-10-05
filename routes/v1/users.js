@@ -33,6 +33,7 @@ router.get("/", authenticated, async function (req, res, next) {
       message: "success",
       data: null,
     });
+    return;
   }
   res.status(constants.http.StatusOK).json({
     status: true,
@@ -49,7 +50,7 @@ router.post("/", adminAuthenticated, async function (req, res, next) {
     res.status(constants.http.StatusBadRequest).json({
       status: false,
       error: "Bad Request",
-      message: "Mobile Number erequired",
+      message: "Mobile Number required",
       data: null,
     });
     return;
@@ -101,6 +102,7 @@ router.get("/:mobile", authenticated, async (req, res, next) => {
       message: "User doesn't exists",
       data: null,
     });
+    return;
   }
 
   if (userPayload.role !== "admin" && userPayload.mobile != user.mobile) {
@@ -157,13 +159,14 @@ router.put("/:mobile", authenticated, async (req, res, next) => {
       message: "User doesn't exists",
       data: null,
     });
+    return;
   }
 
   const usr = maskUser(user);
 
   res.status(constants.http.StatusOK).json({
     status: true,
-    message: "success",
+    message: "User updated successfully",
     data: usr,
   });
 });
@@ -258,13 +261,14 @@ router.delete("/:mobile", adminAuthenticated, async (req, res, next) => {
       message: "User doesn't exists",
       data: null,
     });
+    return;
   }
 
   const usr = maskUser(user);
 
   res.status(constants.http.StatusOK).json({
     status: true,
-    message: "success",
+    message: "User deleted successfully",
     data: usr,
   });
 });
