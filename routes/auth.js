@@ -76,6 +76,7 @@ router.post("/login", async function (req, res, next) {
     return;
   }
   // get token
+
   var token;
   try {
     token = req.headers.authorization.split(" ")[1];
@@ -87,14 +88,18 @@ router.post("/login", async function (req, res, next) {
     token = req.cookies.token;
   }
   if (token) {
-    const usr = maskUser(user);
-    res.status(constants.http.StatusOK).json({
-      status: true,
-      message: "User already logged in",
-      token: token,
-      data: usr,
-    });
-    return;
+    var verifyOpts = jwt.getVerifyingOptions();
+    const decodedToken = jwt.verifyToken(token, verifyOpts);
+    if (decodedToken) {
+      const usr = maskUser(user);
+      res.status(constants.http.StatusOK).json({
+        status: true,
+        message: "User already logged in",
+        token: token,
+        data: usr,
+      });
+      return;
+    }
   }
 
   if (user.role == "user") {
@@ -115,11 +120,13 @@ router.post("/login", async function (req, res, next) {
     return;
   } else {
     if (!password) {
-      const usr = maskUser(user);
+      var usr = maskUser(user);
       // generate token as a user
       var payload = jwt.getPayload(user);
-      payload.role = "user";
       payload.accessLevel = 1;
+      payload.role = "user";
+      usr.role = "user";
+      usr.level = 1;
       const subject = user.id;
       var signOpts = jwt.getSigningOptions(subject);
       // generate token
