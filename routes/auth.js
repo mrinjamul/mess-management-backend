@@ -115,11 +115,22 @@ router.post("/login", async function (req, res, next) {
     return;
   } else {
     if (!password) {
-      res.status(constants.http.StatusBadRequest).json({
-        status: false,
-        error: "Bad Request",
-        message: "password is missing",
-        data: null,
+      const usr = maskUser(user);
+      // generate token as a user
+      var payload = jwt.getPayload(user);
+      payload.role = "user";
+      payload.accessLevel = 1;
+      const subject = user.id;
+      var signOpts = jwt.getSigningOptions(subject);
+      // generate token
+      const token = jwt.issueToken(payload, signOpts);
+      // set token to cookie
+      res.cookie("token", token, cookieConfig);
+      res.status(constants.http.StatusOK).json({
+        status: true,
+        message: "login success",
+        token: token,
+        data: usr,
       });
       return;
     }
