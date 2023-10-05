@@ -8,10 +8,6 @@ const adminAuthenticated = (req, res, next) => {
   } catch (err) {
     // console.log("error: failed to get token from header");
   }
-  if (!token) {
-    // get cookie
-    token = req.cookies.token;
-  }
   // if unable to get token
   if (!token) {
     res.status(constants.http.StatusUnauthorized).json({

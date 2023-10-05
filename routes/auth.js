@@ -83,10 +83,6 @@ router.post("/login", async function (req, res, next) {
   } catch (err) {
     // console.log("error: failed to get token from header");
   }
-  if (!token) {
-    // get cookie
-    token = req.cookies.token;
-  }
   if (token) {
     var verifyOpts = jwt.getVerifyingOptions();
     const decodedToken = jwt.verifyToken(token, verifyOpts);
@@ -109,8 +105,7 @@ router.post("/login", async function (req, res, next) {
     var signOpts = jwt.getSigningOptions(subject);
     // generate token
     const token = jwt.issueToken(payload, signOpts);
-    // set token to cookie
-    res.cookie("token", token, cookieConfig);
+
     res.status(constants.http.StatusOK).json({
       status: true,
       message: "Logged in successfully",
@@ -131,8 +126,7 @@ router.post("/login", async function (req, res, next) {
       var signOpts = jwt.getSigningOptions(subject);
       // generate token
       const token = jwt.issueToken(payload, signOpts);
-      // set token to cookie
-      res.cookie("token", token, cookieConfig);
+
       res.status(constants.http.StatusOK).json({
         status: true,
         message: "logged in successfully",
@@ -150,8 +144,7 @@ router.post("/login", async function (req, res, next) {
       var signOpts = jwt.getSigningOptions(subject);
       // generate token
       const token = jwt.issueToken(payload, signOpts);
-      // set token to cookie
-      res.cookie("token", token, cookieConfig);
+
       res.status(constants.http.StatusOK).json({
         status: true,
         message: "logged in successfully",
@@ -173,8 +166,13 @@ router.post("/login", async function (req, res, next) {
 
 // Logout route
 router.get("/logout", function (req, res, next) {
-  // get cookie
-  const token = req.cookies.token;
+  // get token
+  var token;
+  try {
+    token = req.headers.authorization.split(" ")[1];
+  } catch (err) {
+    // console.log("error: failed to get token from header");
+  }
   if (!token) {
     res.status(constants.http.StatusOK).json({
       message: "User not logged in",
