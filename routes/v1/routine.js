@@ -41,7 +41,7 @@ router.post("/", adminAuthenticated, async function (req, res, next) {
 
   res.status(constants.http.StatusOK).json({
     status: true,
-    message: "success",
+    message: "Menu created successfully",
     data: routine,
   });
 });
@@ -85,7 +85,7 @@ router.put("/:id", adminAuthenticated, async function (req, res, next) {
 
   res.status(constants.http.StatusOK).json({
     status: true,
-    message: "success",
+    message: "Menu updated successfully",
     data: menu,
   });
 });
@@ -107,7 +107,7 @@ router.delete("/:id", adminAuthenticated, async function (req, res, next) {
 
   res.status(constants.http.StatusOK).json({
     status: true,
-    message: "success",
+    message: "Menu deleted successfully",
     data: menu,
   });
 });
