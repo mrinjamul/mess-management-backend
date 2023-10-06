@@ -1,6 +1,6 @@
 # Mess Management System Backend Server
 
-This system is designed to help manage our Mess. It is used to members, attendance, transactions and generate billing per month for members based on their attendence.
+This system is designed to help manage our Mess. It is used to members, attendance, transactions and generate billing per month for members based on their attendance.
 
 Hosted at [akhp](https://akhp.onrender.com/).
 
