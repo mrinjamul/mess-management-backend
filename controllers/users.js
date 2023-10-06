@@ -65,7 +65,6 @@ const UpdateUserByID = async (id, user) => {
 // UpdateUserByMobile: update a user by mobile
 const UpdateUserByMobile = async (mobile, user) => {
   try {
-    const u = await User.findOne({ mobile: mobile });
     const { fullName, year, advance } = user;
     let firstName, middleName, lastName;
     let str = fullName.split(" ");
@@ -101,7 +100,7 @@ const UpdateUserByMobile = async (mobile, user) => {
       usr.advance = advance;
     }
 
-    return await User.findByIdAndUpdate(u._id, usr, {
+    return await User.findOneAndUpdate({ mobile: mobile }, usr, {
       new: true,
     });
   } catch (err) {
@@ -112,9 +111,8 @@ const UpdateUserByMobile = async (mobile, user) => {
 // ChangePasswordByMobile: change a password for a user
 const ChangePasswordByMobile = async (mobile, password) => {
   try {
-    const u = await User.findOne({ mobile: mobile });
-    return await User.findByIdAndUpdate(
-      u._id,
+    return await User.findOneAndUpdate(
+      { mobile: mobile },
       { password: password },
       {
         new: true,
@@ -137,9 +135,7 @@ const DeleteUserByID = async (id) => {
 // DeleteUserByMobile: delete a user from db
 const DeleteUserByMobile = async (mobile) => {
   try {
-    const u = await User.findOne({ mobile: mobile });
-
-    return await User.findByIdAndRemove(u._id);
+    return await User.findOneAndRemove({ mobile: mobile });
   } catch (err) {
     console.log(err);
   }
