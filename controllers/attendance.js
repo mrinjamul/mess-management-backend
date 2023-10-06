@@ -32,25 +32,43 @@ const CreateAttendance = async (user) => {
           { lunch: true, dinner: false },
           { new: true }
         );
+      } else {
+        // Create a new entry for lunch if the current hour is before 16:00
+        // create attendance
+        attendance = new Attendance({
+          user_mobile: mobile,
+          date: formattedDate,
+          lunch: true,
+          dinner: false,
+        });
+        return await attendance.save();
       }
-      // Create a new entry for lunch if the current hour is before 16:00
-      // create attendance
-      attendance = new Attendance({
-        user_mobile: mobile,
-        date: formattedDate,
-        lunch: true,
-        dinner: false,
-      });
-      return await attendance.save();
     } else {
       // create formated date
       const formattedDate = `${day}-${month}-${year}`;
-      // Get the previous entry and set dinner to true
-      return await Attendance.findOneAndUpdate(
-        { user_mobile: mobile, date: formattedDate },
-        { dinner: true },
-        { new: true }
-      );
+      // check if entry already exists
+      var attendance = await Attendance.findOne({
+        user_mobile: mobile,
+        date: formattedDate,
+      });
+      if (attendance) {
+        // Get the previous entry and set dinner to true
+        return await Attendance.findOneAndUpdate(
+          { user_mobile: mobile, date: formattedDate },
+          { dinner: true },
+          { new: true }
+        );
+      } else {
+        // Create a new entry for lunch if the current hour is before 16:00
+        // create attendance
+        attendance = new Attendance({
+          user_mobile: mobile,
+          date: formattedDate,
+          lunch: false,
+          dinner: true,
+        });
+        return await attendance.save();
+      }
     }
   } catch (error) {
     console.log(error);
