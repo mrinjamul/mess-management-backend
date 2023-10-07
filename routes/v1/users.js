@@ -5,7 +5,7 @@ constants = require("../../constants");
 
 const bcrypt = require("../../helpers/bcrypt");
 
-const { maskUser } = require("../../helpers/utils");
+const { maskUser, getSorter } = require("../../helpers/utils");
 
 const {
   CreateUser,
@@ -70,11 +70,14 @@ router.get("/", authenticated, async function (req, res, next) {
     }
   });
 
+  // Sort users by isEaten by asending order
+  const sortedUsers = users.sort(getSorter("isEaten", "asc"));
+
   // send users in response
   res.status(constants.http.StatusOK).json({
     status: true,
     message: "success",
-    data: users,
+    data: sortedUsers,
   });
 });
 
