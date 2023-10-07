@@ -17,6 +17,8 @@ const {
   DeleteUserByMobile,
 } = require("../../controllers/users");
 
+const { GetAllAttendanceByDay } = require("../../controllers/attendance");
+
 const authenticated = require("../../middlewares/authenticated");
 const adminAuthenticated = require("../../middlewares/adminAuthenticated");
 
@@ -24,7 +26,7 @@ const adminAuthenticated = require("../../middlewares/adminAuthenticated");
 
 // Get all users
 router.get("/", authenticated, async function (req, res, next) {
-  const users = await GetAllUser();
+  var users = await GetAllUser();
 
   if (!users) {
     res.status(constants.http.StatusNotFound).json({
@@ -35,6 +37,40 @@ router.get("/", authenticated, async function (req, res, next) {
     });
     return;
   }
+
+  // get current day attendances
+  const attendances = await GetAllAttendanceByDay();
+
+  // Create a map to quickly look up attendances by user_mobile
+  const attendanceMap = new Map();
+  attendances.forEach((attendance) => {
+    attendanceMap.set(attendance.user_mobile, attendance);
+  });
+
+  // get current time;
+  const date = new Date();
+
+  // Merge users with attendances and add the isEaten field
+  users.forEach((user) => {
+    const attendance = attendanceMap.get(user.mobile);
+
+    if (attendance) {
+      // If attendance record exists for the user, set isEaten based on lunch and dinner values
+      // get hour
+      const hour = ((date.getUTCHours() + parseFloat(+5.5)) % 24).toFixed(2);
+      if (hour < 17 && hour > 5) {
+        user.isEaten = attendance.lunch;
+      } else {
+        user.isEaten = attendance.dinner;
+      }
+      // user.isEaten = attendance.lunch || attendance.dinner;
+    } else {
+      // If no attendance record exists for the user, set isEaten to false
+      user.isEaten = false;
+    }
+  });
+
+  // send users in response
   res.status(constants.http.StatusOK).json({
     status: true,
     message: "success",

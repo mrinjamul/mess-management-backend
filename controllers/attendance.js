@@ -17,7 +17,6 @@ const CreateAttendance = async (user) => {
 
     // get hour
     const hour = ((date.getUTCHours() + parseFloat(+5.5)) % 24).toFixed(2);
-    console.log(hour);
     if (hour < 17 && hour > 5) {
       // create formated date
       const formattedDate = `${day}-${month}-${year}`;
@@ -85,6 +84,32 @@ const GetAllAttendance = async () => {
   }
 };
 
+// GetAllAttendanceByDay: return attendances for a day.
+// day in string
+const GetAllAttendanceByDay = async (day) => {
+  try {
+    if (!day || day === "") {
+      // get current time;
+      const date = new Date();
+
+      // get day
+      const dayNum = date.getDate().toString().padStart(2, "0");
+      // get month
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      // get year
+      const year = date.getFullYear().toString().slice(-2);
+
+      // create formated date
+      day = `${dayNum}-${month}-${year}`;
+    }
+
+    // get attendances
+    return await Attendance.find({ date: day });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // GetCurrentAttendanceByMobile: return current day attendance for a user
 const GetCurrentAttendanceByMobile = async (mobile) => {
   try {
@@ -123,6 +148,7 @@ const DeleteAttendance = async (id) => {};
 module.exports = {
   CreateAttendance,
   GetAllAttendance,
+  GetAllAttendanceByDay,
   GetCurrentAttendanceByMobile,
   DeleteAttendance,
 };

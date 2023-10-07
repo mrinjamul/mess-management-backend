@@ -22,7 +22,7 @@ const CreateUser = async (req) => {
 // GetAllUser: fetch all users from db
 const GetAllUser = async (req) => {
   try {
-    return await User.find();
+    return await User.find().lean();
   } catch (err) {
     console.log(err);
   }
