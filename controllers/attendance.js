@@ -18,7 +18,7 @@ const CreateAttendance = async (user) => {
     // get hour
     const hour = ((date.getUTCHours() + parseFloat(+5.5)) % 24).toFixed(2);
     console.log(hour);
-    if (hour < 17) {
+    if (hour < 17 && hour > 5) {
       // create formated date
       const formattedDate = `${day}-${month}-${year}`;
       // check if entry already exists

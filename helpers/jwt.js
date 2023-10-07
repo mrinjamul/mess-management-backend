@@ -31,8 +31,8 @@ function getSigningOptions(subject, algo) {
     issuer: issuer,
     subject: subject,
     audience: audience,
-    //   expiresIn: 12 * 60 * 60,
-    expiresIn: "12h",
+    expiresIn: 7 * 24 * 60 * 60,
+    // expiresIn: "12h",
     algorithm: algo,
   };
   return signOptions;
@@ -47,8 +47,8 @@ function getVerifyingOptions(algo) {
   var verifyOptions = {
     issuer: issuer,
     audience: audience,
-    //   expiresIn: 12 * 60 * 60,
-    expiresIn: "12h",
+    expiresIn: 7 * 24 * 60 * 60,
+    // expiresIn: "12h",
     algorithm: algo,
   };
   return verifyOptions;
