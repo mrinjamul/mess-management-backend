@@ -58,7 +58,7 @@ router.get("/", authenticated, async function (req, res, next) {
       // If attendance record exists for the user, set isEaten based on lunch and dinner values
       // get hour
       const hour = ((date.getUTCHours() + parseFloat(+5.5)) % 24).toFixed(2);
-      if (hour < 17 && hour > 5) {
+      if (hour < 18 && hour > 10) {
         user.isEaten = attendance.lunch;
       } else {
         user.isEaten = attendance.dinner;
@@ -70,7 +70,7 @@ router.get("/", authenticated, async function (req, res, next) {
     }
   });
 
-  // Sort users by isEaten by asending order
+  // Sort users by isEaten by acsending order
   const sortedUsers = users.sort(getSorter("isEaten", "asc"));
 
   // send users in response
