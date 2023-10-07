@@ -1,9 +1,10 @@
 var express = require("express");
 var router = express.Router();
 
-var userRouter = require("./users");
-var routineRouter = require("./routine");
-var attendanceRouter = require("./attendence");
+const userRouter = require("./users");
+const routineRouter = require("./routine");
+const attendanceRouter = require("./attendence");
+const transactionRouter = require("./transaction");
 
 /* V1 API routes */
 
@@ -11,5 +12,6 @@ var attendanceRouter = require("./attendence");
 router.use("/user", userRouter);
 router.use("/routine", routineRouter);
 router.use("/attendance", attendanceRouter);
+router.use("/transaction", transactionRouter);
 
 module.exports = router;
