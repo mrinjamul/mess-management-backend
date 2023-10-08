@@ -17,13 +17,23 @@ const { CreateUser, GetUserByMobile } = require("../controllers/users");
 
 // SignUp route
 router.post("/signup", async function (req, res, next) {
-  const { mobile } = req.body;
+  const { mobile, password } = req.body;
   // check for required values;
   if (!mobile) {
     res.status(constants.http.StatusBadRequest).json({
       code: constants.http.StatusBadRequest,
       error: "Bad Request",
       message: "Mobile Number required",
+      data: null,
+    });
+    return;
+  }
+  if (!password) {
+    res.status(constants.http.StatusBadRequest).json({
+      code: constants.http.StatusBadRequest,
+      error: "Bad Request",
+      message: "Password required",
+      data: null,
     });
     return;
   }
@@ -53,12 +63,21 @@ router.post("/signup", async function (req, res, next) {
 // Login route
 router.post("/login", async function (req, res, next) {
   // get login credentials
-  const { mobile, password } = req.body;
+  const { mobile, password, role } = req.body;
   if (!mobile) {
     res.status(constants.http.StatusBadRequest).json({
       status: false,
       error: "Bad Request",
       message: "Mobile Number missing",
+      data: null,
+    });
+    return;
+  }
+  if (!password) {
+    res.status(constants.http.StatusBadRequest).json({
+      status: false,
+      error: "Bad Request",
+      message: "Password missing",
       data: null,
     });
     return;
@@ -103,7 +122,19 @@ router.post("/login", async function (req, res, next) {
     }
   }
 
-  if (user.role == "user") {
+  // validate user password
+  const isVerified = await bcrypt.VerifyHash(password, user.password);
+  if (!isVerified) {
+    res.status(constants.http.StatusBadRequest).json({
+      status: false,
+      error: "invalid request",
+      message: "Invalid password",
+      data: null,
+    });
+    return;
+  }
+
+  if (role == "admin") {
     const usr = maskUser(user);
     var payload = jwt.getPayload(user);
     const subject = user.id;
@@ -113,59 +144,31 @@ router.post("/login", async function (req, res, next) {
 
     res.status(constants.http.StatusOK).json({
       status: true,
-      message: "Logged in successfully",
+      message: "logged in successfully",
       token: token,
       data: usr,
     });
     return;
   } else {
-    if (!password) {
-      var usr = maskUser(user);
-      // generate token as a user
-      var payload = jwt.getPayload(user);
-      payload.accessLevel = 1;
-      payload.role = "user";
-      usr.role = "user";
-      usr.level = 1;
-      const subject = user.id;
-      var signOpts = jwt.getSigningOptions(subject);
-      // generate token
-      const token = jwt.issueToken(payload, signOpts);
+    var usr = maskUser(user);
+    // generate token as a user
+    var payload = jwt.getPayload(user);
+    payload.accessLevel = 1;
+    payload.role = "user";
+    usr.role = "user";
+    usr.level = 1;
+    const subject = user.id;
+    var signOpts = jwt.getSigningOptions(subject);
+    // generate token
+    const token = jwt.issueToken(payload, signOpts);
 
-      res.status(constants.http.StatusOK).json({
-        status: true,
-        message: "logged in successfully",
-        token: token,
-        data: usr,
-      });
-      return;
-    }
-    // validate user password
-    const isVerified = await bcrypt.VerifyHash(password, user.password);
-    if (isVerified) {
-      const usr = maskUser(user);
-      var payload = jwt.getPayload(user);
-      const subject = user.id;
-      var signOpts = jwt.getSigningOptions(subject);
-      // generate token
-      const token = jwt.issueToken(payload, signOpts);
-
-      res.status(constants.http.StatusOK).json({
-        status: true,
-        message: "logged in successfully",
-        token: token,
-        data: usr,
-      });
-      return;
-    } else {
-      res.status(constants.http.StatusBadRequest).json({
-        status: false,
-        error: "invalid request",
-        message: "Invalid password",
-        data: null,
-      });
-      return;
-    }
+    res.status(constants.http.StatusOK).json({
+      status: true,
+      message: "logged in successfully",
+      token: token,
+      data: usr,
+    });
+    return;
   }
 });
 
@@ -184,8 +187,7 @@ router.get("/logout", function (req, res, next) {
     });
     return;
   }
-  // clear token cookie
-  res.clearCookie("token");
+
   res.status(constants.http.StatusOK).json({
     message: "Logout successfully",
   });

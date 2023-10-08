@@ -94,6 +94,15 @@ router.post("/", adminAuthenticated, async function (req, res, next) {
     });
     return;
   }
+  if (!password) {
+    res.status(constants.http.StatusBadRequest).json({
+      code: constants.http.StatusBadRequest,
+      error: "Bad Request",
+      message: "Password required",
+      data: null,
+    });
+    return;
+  }
 
   // after validation, create user into the db
   const user = await CreateUser(req);
@@ -223,15 +232,6 @@ router.patch("/:mobile", authenticated, async (req, res, next) => {
     });
     return;
   }
-
-  // if (user.role == "user") {
-  //   res.status(constants.http.StatusOK).json({
-  //     status: true,
-  //     message: "Password is not required",
-  //     data: null,
-  //   });
-  //   return;
-  // }
 
   // get fields from request
   const { oldPassword, password } = req.body;
