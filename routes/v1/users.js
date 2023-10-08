@@ -94,15 +94,15 @@ router.post("/", adminAuthenticated, async function (req, res, next) {
     });
     return;
   }
-  if (!password) {
-    res.status(constants.http.StatusBadRequest).json({
-      code: constants.http.StatusBadRequest,
-      error: "Bad Request",
-      message: "Password required",
-      data: null,
-    });
-    return;
-  }
+  // if (!password) {
+  //   res.status(constants.http.StatusBadRequest).json({
+  //     code: constants.http.StatusBadRequest,
+  //     error: "Bad Request",
+  //     message: "Password required",
+  //     data: null,
+  //   });
+  //   return;
+  // }
 
   // after validation, create user into the db
   const user = await CreateUser(req);
@@ -217,6 +217,50 @@ router.put("/:mobile", authenticated, async (req, res, next) => {
     message: "User updated successfully",
     data: usr,
   });
+});
+
+// Forgot password
+router.patch("/:mobile/forgot-password", async (req, res, next) => {
+  // get mobile from param
+  const mobile = req.params.mobile;
+  // Get user informations
+  const user = await GetUserByMobile(mobile);
+  if (!user) {
+    res.status(constants.http.StatusNotFound).json({
+      status: false,
+      message: "User does not exists",
+      data: null,
+    });
+    return;
+  }
+
+  if (!user.password) {
+    const newHash = await bcrypt.HashAndSalt(password);
+
+    const usr = await ChangePasswordByMobile(mobile, newHash);
+    if (!usr) {
+      res.status(constants.http.StatusInternalServerError).json({
+        status: false,
+        message: "Failed to update password",
+        data: null,
+      });
+      return;
+    }
+
+    res.status(constants.http.StatusOK).json({
+      status: true,
+      message: "Password updated successfully",
+      data: null,
+    });
+  } else {
+    res.status(constants.http.StatusBadRequest).json({
+      status: false,
+      error: "unauthorized",
+      message: "You are not permited to change password",
+      data: null,
+    });
+    return;
+  }
 });
 
 // Change password
