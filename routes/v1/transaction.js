@@ -85,63 +85,63 @@ router.get("/", authenticated, async function (req, res, next) {
 });
 
 // Create a transaction
-router.post("/", adminAuthenticated, async function (req, res, next) {
-  const {
-    type,
-    method,
-    sender,
-    recipient,
-    amount,
-    description,
-    item,
-    quantity,
-  } = req.body;
+// router.post("/", adminAuthenticated, async function (req, res, next) {
+//   const {
+//     type,
+//     method,
+//     sender,
+//     recipient,
+//     amount,
+//     description,
+//     item,
+//     quantity,
+//   } = req.body;
 
-  if (!type || !method || !sender || !recipient || !amount) {
-    res.status(constants.http.StatusBadRequest).json({
-      status: false,
-      error: "missing fields",
-      message: "Missing required data",
-      data: {},
-    });
-    return;
-  }
+//   if (!type || !method || !sender || !recipient || !amount) {
+//     res.status(constants.http.StatusBadRequest).json({
+//       status: false,
+//       error: "missing fields",
+//       message: "Missing required data",
+//       data: {},
+//     });
+//     return;
+//   }
 
-  let t = {
-    type: type,
-    method: method,
-    sender: sender,
-    recipient: recipient,
-    amount: amount,
-  };
+//   let t = {
+//     type: type,
+//     method: method,
+//     sender: sender,
+//     recipient: recipient,
+//     amount: amount,
+//   };
 
-  if (description) {
-    t.description = description;
-  }
-  if (item) {
-    t.item = item;
-  }
-  if (quantity) {
-    t.quantity = quantity;
-  }
+//   if (description) {
+//     t.description = description;
+//   }
+//   if (item) {
+//     t.item = item;
+//   }
+//   if (quantity) {
+//     t.quantity = quantity;
+//   }
 
-  const tnx = await CreateTransaction(t);
-  if (!tnx) {
-    res.status(constants.http.StatusNotFound).json({
-      status: false,
-      error: "not found",
-      message: "Transaction does not exists",
-      data: {},
-    });
-    return;
-  }
+//   const tnx = await CreateTransaction(t);
+//   if (!tnx) {
+//     res.status(constants.http.StatusNotFound).json({
+//       status: false,
+//       error: "not found",
+//       message: "Transaction does not exists",
+//       data: {},
+//     });
+//     return;
+//   }
 
-  res.status(constants.http.StatusOK).json({
-    status: true,
-    message: "Transaction created successfully",
-    data: tnx,
-  });
-});
+//   res.status(constants.http.StatusOK).json({
+//     status: true,
+//     message: "Transaction created successfully",
+//     data: tnx,
+//   });
+// });
 
 // Get a transaction
 router.get("/:id", authenticated, async function (req, res, next) {
