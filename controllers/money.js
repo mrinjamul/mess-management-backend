@@ -17,6 +17,12 @@ const AddMoney = async (tnx) => {
       description: tnx.description,
     };
 
+    if (!tnx.month) {
+      tx.month = new Date().toLocaleString("en-US", { month: "long" });
+    } else {
+      tx.month = tnx.month;
+    }
+
     const updatedTx = await CreateTransaction(tx);
 
     var user = {};
@@ -56,6 +62,12 @@ const SpendMoney = async (tnx) => {
     };
     if (tnx.description) {
       tx.description = tnx.description;
+    }
+
+    if (!tnx.month) {
+      tx.month = new Date().toLocaleString("en-US", { month: "long" });
+    } else {
+      tx.month = tnx.month;
     }
 
     return await CreateTransaction(tx);
