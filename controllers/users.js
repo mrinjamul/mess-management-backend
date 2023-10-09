@@ -9,7 +9,6 @@ const CreateUser = async (req) => {
     let user = new User({
       fullName: fullName,
       year: year,
-      advance: advance,
       mobile: mobile,
       password: password,
     });
@@ -45,38 +44,28 @@ const GetUserByMobile = async (mobile) => {
     console.log(err);
   }
 };
-// UpdateUserByID: update a user by id
-const UpdateUserByID = async (id, user) => {
-  try {
-    const { fullName, year, advance } = user;
-    const usr = {
-      fullName: fullName,
-      year: year,
-      advance: advance,
-    };
-    return await User.findByIdAndUpdate(id, usr, {
-      new: true,
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
 
 // UpdateUserByMobile: update a user by mobile
 const UpdateUserByMobile = async (mobile, user) => {
   try {
-    const { fullName, year, advance } = user;
+    const { fullName, year, advance, due } = user;
     let firstName, middleName, lastName;
-    let str = fullName.split(" ");
-    if (str.length == 2) {
+    let str;
+    try {
+      str = fullName.split(" ");
+    } catch (error) {
+      str = [];
+    }
+    if (str.length == 3) {
+      firstName = str[0];
+      middleName = str[1];
+      lastName = str[2];
+    } else if (str.length == 2) {
       firstName = str[0];
       lastName = str[1];
     } else if (str.length == 1) {
       firstName = str[0];
     } else {
-      firstName = str[0];
-      middleName = str[1];
-      lastName = str[2];
     }
     let usr = {};
 
@@ -98,6 +87,9 @@ const UpdateUserByMobile = async (mobile, user) => {
 
     if (advance) {
       usr.advance = advance;
+    }
+    if (due) {
+      usr.due = due;
     }
 
     return await User.findOneAndUpdate({ mobile: mobile }, usr, {
@@ -146,7 +138,6 @@ module.exports = {
   GetAllUser,
   GetUserByID,
   GetUserByMobile,
-  UpdateUserByID,
   UpdateUserByMobile,
   ChangePasswordByMobile,
   DeleteUserByID,

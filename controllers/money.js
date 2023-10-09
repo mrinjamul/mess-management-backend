@@ -1,5 +1,6 @@
 const Transaction = require("../models/Transaction");
 const { CreateTransaction } = require("./transaction");
+const { GetUserByMobile, UpdateUserByMobile } = require("./users");
 
 // AddMoney: add money to the mess
 const AddMoney = async (tnx) => {
@@ -11,11 +12,29 @@ const AddMoney = async (tnx) => {
       type: type,
       method: method,
       sender: tnx.sender,
-      recipient: tnx.recipient,
+      recipient: "admin",
       amount: tnx.amount,
       description: tnx.description,
     };
-    return await CreateTransaction(tx);
+
+    const updatedTx = await CreateTransaction(tx);
+
+    var user = {};
+
+    if (method == "cash") {
+      try {
+        // get user info
+        user = await GetUserByMobile(tnx.sender);
+        // Add money to user's advance
+        user = await UpdateUserByMobile(tnx.sender, {
+          advance: user.advance + tnx.amount,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    return updatedTx;
   } catch (error) {
     console.log(error);
   }
@@ -28,7 +47,7 @@ const SpendMoney = async (tnx) => {
     var tx = {
       type: type,
       method: method,
-      sender: tnx.sender,
+      sender: "admin",
       recipient: tnx.recipient,
       amount: tnx.amount,
       // description: tnx.description,

@@ -39,6 +39,9 @@ const UserSchema = new mongoose.Schema({
   advance: {
     type: Number,
   },
+  due: {
+    type: Number,
+  },
   role: {
     type: String,
   },
@@ -84,6 +87,9 @@ UserSchema.pre("save", async function (next) {
 
   if (!this.advance) {
     this.advance = 0;
+  }
+  if (!this.due) {
+    this.due = 0;
   }
 
   if (!this.level) {
