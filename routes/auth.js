@@ -38,6 +38,30 @@ router.post("/signup", async function (req, res, next) {
     return;
   }
 
+  var token;
+  try {
+    token = req.headers.authorization.split(" ")[1];
+  } catch (err) {
+    // console.log("error: failed to get token from header");
+  }
+  if (token) {
+    var verifyOpts = jwt.getVerifyingOptions();
+    var decodedToken;
+    try {
+      decodedToken = jwt.verifyToken(token, verifyOpts);
+    } catch (error) {
+      console.log(error);
+    }
+    if (decodedToken) {
+      res.status(constants.http.StatusOK).json({
+        status: true,
+        message: "User already logged in",
+        token: token,
+      });
+      return;
+    }
+  }
+
   // after validation, create user into the db
   const user = await CreateUser(req);
   // if err occurs then return with error

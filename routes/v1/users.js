@@ -223,6 +223,16 @@ router.put("/:mobile", authenticated, async (req, res, next) => {
 router.patch("/:mobile/forgot-password", async (req, res, next) => {
   // get mobile from param
   const mobile = req.params.mobile;
+  // get body fields from req.body
+  const { password } = req.body;
+  if (!password) {
+    res.status(constants.http.StatusNotFound).json({
+      status: false,
+      message: "Password is missing",
+      data: null,
+    });
+    return;
+  }
   // Get user informations
   const user = await GetUserByMobile(mobile);
   if (!user) {
