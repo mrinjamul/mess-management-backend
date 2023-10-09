@@ -54,6 +54,10 @@ const SpendMoney = async (tnx) => {
       item: tnx.item,
       quantity: tnx.quantity,
     };
+    if (tnx.description) {
+      tx.description = tnx.description;
+    }
+
     return await CreateTransaction(tx);
   } catch (error) {
     console.log(error);

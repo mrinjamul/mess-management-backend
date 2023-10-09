@@ -33,6 +33,11 @@ const TransactionSchema = new mongoose.Schema({
   },
   quantity: {
     type: String,
+    lowercase: true,
+  },
+  month: {
+    type: String,
+    lowercase: true,
   },
 });
 
