@@ -45,6 +45,7 @@ const AddMoney = async (tnx) => {
     console.log(error);
   }
 };
+
 // SpendMoney: spend money from the mess
 const SpendMoney = async (tnx) => {
   try {
@@ -76,7 +77,97 @@ const SpendMoney = async (tnx) => {
   }
 };
 
+// GetAllSpends: return a outflow cash data
+const GetAllSpends = async () => {
+  try {
+    return await Transaction.find({ type: "out" }).lean();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Get Summary of money flows
+
+const GetSummary = async (month) => {
+  try {
+    let matchStage = {}; // Match stage for aggregation pipeline
+
+    // If month is provided, filter by that month
+    if (month) {
+      matchStage = { month: month };
+    }
+
+    // Calculate the total money spent (outflow)
+    const outflowPipeline = [
+      {
+        $match: {
+          ...matchStage, // Include month filter if provided
+          type: "out", // Assuming "out" represents money spent, adjust if needed
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalMoneySpent: { $sum: "$amount" },
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Exclude _id from the result
+          totalMoneySpent: 1,
+        },
+      },
+    ];
+
+    // Calculate the total money received (inflow)
+    const inflowPipeline = [
+      {
+        $match: {
+          ...matchStage, // Include month filter if provided
+          type: "in", // Assuming "in" represents money received, adjust if needed
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalMoneyReceived: { $sum: "$amount" },
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Exclude _id from the result
+          totalMoneyReceived: 1,
+        },
+      },
+    ];
+
+    const [outflowSummary, inflowSummary] = await Promise.all([
+      Transaction.aggregate(outflowPipeline),
+      Transaction.aggregate(inflowPipeline),
+    ]);
+
+    // Calculate the net money
+    const netMoney =
+      (inflowSummary[0]?.totalMoneyReceived || 0) -
+      (outflowSummary[0]?.totalMoneySpent || 0);
+
+    const summary = {
+      month: month || "all", // Provide a default value if month is empty
+      totalMoneySpent: outflowSummary[0]?.totalMoneySpent || 0,
+      totalMoneyReceived: inflowSummary[0]?.totalMoneyReceived || 0,
+      netMoney: netMoney,
+    };
+    return summary;
+  } catch (error) {
+    // console.error("Error while fetching summary:", error);
+    // throw error;
+    console.log(error);
+  }
+};
+
 module.exports = {
   AddMoney,
   SpendMoney,
+  GetAllSpends,
+  GetSummary,
 };

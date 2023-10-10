@@ -6,7 +6,12 @@ const constants = require("../../constants");
 const authenticated = require("../../middlewares/authenticated");
 const adminAuthenticated = require("../../middlewares/adminAuthenticated");
 
-const { AddMoney, SpendMoney } = require("../../controllers/money");
+const {
+  AddMoney,
+  SpendMoney,
+  GetAllSpends,
+  GetSummary,
+} = require("../../controllers/money");
 
 const utils = require("../../helpers/utils");
 
@@ -93,6 +98,109 @@ router.post("/spend", adminAuthenticated, async (req, res, next) => {
     status: true,
     message: "Money send to " + recipient + " successfully",
     data: tx,
+  });
+});
+
+// Create summary
+router.get("/summary", authenticated, async (req, res, next) => {
+  // get queries
+  const { month } = req.query;
+
+  let filter = "";
+
+  if (month == "all") {
+    filter = undefined;
+  } else if (month) {
+    filter = month;
+  } else {
+    filter = new Date().toLocaleString("en-US", { month: "long" }).toLowerCase;
+  }
+
+  const summary = await GetSummary(filter);
+
+  if (!summary) {
+    res.status(constants.http.StatusNotFound).json({
+      status: false,
+      error: "failed to get summary",
+      message: "Not Found",
+      data: {},
+    });
+    return;
+  }
+
+  res.status(constants.http.StatusOK).json({
+    status: true,
+    message: "success",
+    data: summary,
+  });
+});
+
+// Get all spends
+router.get("/expenses", authenticated, async (req, res, next) => {
+  // get queries
+  // Parse query parameters with default values
+  const {
+    page = 1,
+    limit = 10,
+    offset = 0, // Default to offset of 0 if not specified
+    dateStart,
+    dateEnd,
+    sortBy = "created_at",
+    orderBy = "desc",
+    ...filters
+  } = req.query;
+
+  const transactions = await GetAllSpends();
+
+  // if transaction not found
+  if (!transactions) {
+    const pageInf = {
+      currentItems: 0,
+      totalItems: 0,
+      currentPage: parseInt(page),
+      totalPages: 1,
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+    };
+
+    res.status(constants.http.StatusNotFound).json({
+      status: false,
+      error: "failed to get transactions from database",
+      message: "Not Found",
+      pageInfo: pageInf,
+      data: [],
+    });
+    return;
+  }
+
+  //  Apply filters dynamically
+  const filteredItems = transactions.filter(
+    utils.getFilter(filters, dateStart, dateEnd)
+  );
+
+  // Sort items based on sortBy and orderBy
+  const sortedItems = filteredItems.sort(utils.getSorter(sortBy, orderBy));
+
+  //  Calculate the skip value based on both page and offset
+  const skip = (page - 1) * limit + parseInt(offset);
+  // Slice the items to get the paginated results
+  const paginatedItems = sortedItems.slice(skip, skip + parseInt(limit));
+
+  // write page info
+  const pageInfo = {
+    currentItems: paginatedItems.length,
+    totalItems: sortedItems.length,
+    currentPage: parseInt(page),
+    totalPages: Math.ceil(sortedItems.length / limit),
+    limit: parseInt(limit),
+    offset: parseInt(offset),
+  };
+
+  res.status(constants.http.StatusOK).json({
+    status: true,
+    message: "success",
+    pageInfo: pageInfo,
+    data: sortedItems,
   });
 });
 
