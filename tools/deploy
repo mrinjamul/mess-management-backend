@@ -6,9 +6,18 @@
 # deploy by hook
 
 export $(grep -v '^#' .env | xargs -d '\n')
-echo "Deploying via Deploy Hook $DEPLOY_HOOK" # Make a request to the URL
-curlRun="curl -s $DEPLOY_HOOK"
-eval $curlRun
+
+
+
+if [ "$1" == "prod" ]; then
+    echo "Deploying PRODUCTION Server via Deploy Hook $DEPLOY_HOOK"
+    curlRun="curl -s $DEPLOY_HOOK"
+    eval $curlRun
+else
+    echo "Deploying DEVLOPMENT Server via Deploy Hook $DEPLOY_HOOK_DEV"
+    curlRun="curl -s $DEPLOY_HOOK_DEV"
+    eval $curlRun
+fi
 
 echo ""
 echo "Done!"
