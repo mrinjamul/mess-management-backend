@@ -34,7 +34,7 @@ const AddMoney = async (tnx) => {
         user = await GetUserByMobile(tnx.sender);
         // Add money to user's advance
         user = await UpdateUserByMobile(tnx.sender, {
-          advance: user.advance + tnx.amount,
+          advance: parseInt(user.advance) + parseInt(tnx.amount),
         });
       } catch (error) {
         console.log(error);
