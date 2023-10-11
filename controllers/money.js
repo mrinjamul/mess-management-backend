@@ -1,4 +1,5 @@
 const Transaction = require("../models/Transaction");
+const User = require("../models/User");
 const { CreateTransaction } = require("./transaction");
 const { GetUserByMobile, UpdateUserByMobile } = require("./users");
 
@@ -77,6 +78,25 @@ const SpendMoney = async (tnx) => {
   }
 };
 
+// CleanUpAdvance: reset advance in user fields
+const CleanUpAdvance = async () => {
+  try {
+    // Update a users
+    return await User.updateMany({}, { advance: 0 });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// CleanUpTnx: clean up transaction
+const CleanUpTnx = async () => {
+  try {
+    return await Transaction.deleteMany({});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // GetAllSpends: return a outflow cash data
 const GetAllSpends = async () => {
   try {
@@ -119,6 +139,29 @@ const GetSummary = async (month) => {
       },
     ];
 
+    // Calculate the total due to vendors (outflow in credit)
+    const duePipeline = [
+      {
+        $match: {
+          ...matchStage, // Include month filter if provided
+          type: "out", // Assuming "out" represents money spent, adjust if needed
+          method: "due", // for transaction in credit
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalMoneyDue: { $sum: "$amount" },
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Exclude _id from the result
+          totalMoneyDue: 1,
+        },
+      },
+    ];
+
     // Calculate the total money received (inflow)
     const inflowPipeline = [
       {
@@ -141,8 +184,9 @@ const GetSummary = async (month) => {
       },
     ];
 
-    const [outflowSummary, inflowSummary] = await Promise.all([
+    const [outflowSummary, dueSummary, inflowSummary] = await Promise.all([
       Transaction.aggregate(outflowPipeline),
+      Transaction.aggregate(duePipeline),
       Transaction.aggregate(inflowPipeline),
     ]);
 
@@ -155,6 +199,7 @@ const GetSummary = async (month) => {
       month: month || "all", // Provide a default value if month is empty
       totalMoneySpent: outflowSummary[0]?.totalMoneySpent || 0,
       totalMoneyReceived: inflowSummary[0]?.totalMoneyReceived || 0,
+      totalMoneyDue: dueSummary[0]?.totalMoneyDue || 0,
       netMoney: netMoney,
     };
     return summary;
@@ -168,6 +213,8 @@ const GetSummary = async (month) => {
 module.exports = {
   AddMoney,
   SpendMoney,
+  CleanUpAdvance,
+  CleanUpTnx,
   GetAllSpends,
   GetSummary,
 };

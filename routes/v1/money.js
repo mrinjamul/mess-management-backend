@@ -9,6 +9,8 @@ const adminAuthenticated = require("../../middlewares/adminAuthenticated");
 const {
   AddMoney,
   SpendMoney,
+  CleanUpAdvance,
+  CleanUpTnx,
   GetAllSpends,
   GetSummary,
 } = require("../../controllers/money");
@@ -203,5 +205,40 @@ router.get("/expenses", authenticated, async (req, res, next) => {
     data: sortedItems,
   });
 });
+
+// Use to clean up tx mess
+
+// router.get("/cleanup", adminAuthenticated, async (req, res, next) => {
+//   const users = await CleanUpAdvance();
+//   if (!users) {
+//     res.status(constants.http.StatusInternalServerError).json({
+//       status: false,
+//       error: "not found",
+//       message: "Not Found",
+//       data: null,
+//     });
+//     return;
+//   }
+
+//   const tnx = await CleanUpTnx();
+//   if (!tnx) {
+//     res.status(constants.http.StatusInternalServerError).json({
+//       status: false,
+//       error: "not found",
+//       message: "Transaction Not Found",
+//       data: null,
+//     });
+//     return;
+//   }
+
+//   res.status(constants.http.StatusOK).json({
+//     status: true,
+//     message: "success",
+//     data: {
+//       users: users,
+//       transactions: tnx,
+//     },
+//   });
+// });
 
 module.exports = router;
