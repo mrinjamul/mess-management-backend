@@ -23,6 +23,11 @@ const AddMoney = async (tnx) => {
     } else {
       tx.month = tnx.month;
     }
+    if (!tnx.year) {
+      tx.year = new Date().toLocaleString("en-US", { year: "numeric" });
+    } else {
+      tx.year = tnx.year;
+    }
 
     const updatedTx = await CreateTransaction(tx);
 
@@ -71,6 +76,11 @@ const SpendMoney = async (tnx) => {
     } else {
       tx.month = tnx.month;
     }
+    if (!tnx.year) {
+      tx.year = new Date().toLocaleString("en-US", { year: "numeric" });
+    } else {
+      tx.year = tnx.year;
+    }
 
     return await CreateTransaction(tx);
   } catch (error) {
@@ -108,13 +118,18 @@ const GetAllSpends = async () => {
 
 // Get Summary of money flows
 
-const GetSummary = async (month) => {
+const GetSummary = async (month, year) => {
   try {
     let matchStage = {}; // Match stage for aggregation pipeline
 
+    // if month & year both provided
+    if (month && year) {
+      matchStage = { month: month, year: year };
+    }
+    year = new Date().toLocaleString("en-US", { year: "numeric" });
     // If month is provided, filter by that month
     if (month) {
-      matchStage = { month: month };
+      matchStage = { month: month, year: year };
     }
 
     // Calculate the total money spent (outflow)

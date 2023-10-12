@@ -29,6 +29,26 @@ const GetAllTransaction = async () => {
   }
 };
 
+// Get all transactions by month and year
+const GetAllTransactionByFilter = async (month, year) => {
+  try {
+    let matchStage = {}; // Match stage for aggregation pipeline
+
+    // if month & year both provided
+    if (month && year) {
+      matchStage = { month: month, year: year };
+    }
+    year = new Date().toLocaleString("en-US", { year: "numeric" });
+    // If month is provided, filter by that month
+    if (month) {
+      matchStage = { month: month, year: year };
+    }
+    return await Transaction.find(matchStage).lean();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // Delete a Transaction
 const DeleteTransactionByID = async (id) => {
   try {
@@ -42,5 +62,6 @@ module.exports = {
   CreateTransaction,
   GetTransactionByID,
   GetAllTransaction,
+  GetAllTransactionByFilter,
   DeleteTransactionByID,
 };

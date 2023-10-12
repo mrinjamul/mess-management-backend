@@ -39,6 +39,10 @@ const TransactionSchema = new mongoose.Schema({
     type: String,
     lowercase: true,
   },
+  year: {
+    type: String,
+    lowercase: true,
+  },
 });
 
 TransactionSchema.plugin(timestampPlugin);
