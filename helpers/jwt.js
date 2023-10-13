@@ -5,6 +5,7 @@ const config = require("../config/config").getConfig();
 // default signing options
 const issuer = "MMS";
 const audience = "MMS";
+const expireIn = 3 * 24 * 60 * 60;
 
 // default payload
 function getPayload(user) {
@@ -31,7 +32,7 @@ function getSigningOptions(subject, algo) {
     issuer: issuer,
     subject: subject,
     audience: audience,
-    expiresIn: 7 * 24 * 60 * 60,
+    expiresIn: expireIn,
     // expiresIn: "12h",
     algorithm: algo,
   };
@@ -47,7 +48,7 @@ function getVerifyingOptions(algo) {
   var verifyOptions = {
     issuer: issuer,
     audience: audience,
-    expiresIn: 7 * 24 * 60 * 60,
+    expiresIn: expireIn,
     // expiresIn: "12h",
     algorithm: algo,
   };
