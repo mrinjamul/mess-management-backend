@@ -6,6 +6,7 @@ const routineRouter = require("./routine");
 const attendanceRouter = require("./attendence");
 const transactionRouter = require("./transaction");
 const moneyRouter = require("./money");
+const billRouter = require("./bill");
 
 /* V1 API routes */
 
@@ -15,5 +16,6 @@ router.use("/routine", routineRouter);
 router.use("/attendance", attendanceRouter);
 router.use("/transaction", transactionRouter);
 router.use("/money", moneyRouter);
+router.use("/bill", billRouter);
 
 module.exports = router;

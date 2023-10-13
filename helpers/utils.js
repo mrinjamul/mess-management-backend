@@ -6,6 +6,7 @@ function maskUser(user) {
     year: user.year,
     mobile: user.mobile,
     advance: user.advance,
+    due: user.due,
     role: user.role,
     level: user.level,
     created_at: user.created_at,

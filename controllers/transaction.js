@@ -38,12 +38,11 @@ const GetAllTransactionByFilter = async (month, year) => {
     if (month && year) {
       matchStage = { month: month, year: year };
     }
-    year = new Date().toLocaleString("en-US", { year: "numeric" });
     // If month is provided, filter by that month
     if (month) {
-      matchStage = { month: month, year: year };
+      matchStage = { month: month };
     }
-    return await Transaction.find(matchStage).lean();
+    return await Transaction.find(matchStage);
   } catch (error) {
     console.log(error);
   }
