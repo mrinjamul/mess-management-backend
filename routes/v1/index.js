@@ -7,6 +7,7 @@ const attendanceRouter = require("./attendence");
 const transactionRouter = require("./transaction");
 const moneyRouter = require("./money");
 const billRouter = require("./bill");
+const managerRouter = require("./manager");
 
 /* V1 API routes */
 
@@ -17,5 +18,6 @@ router.use("/attendance", attendanceRouter);
 router.use("/transaction", transactionRouter);
 router.use("/money", moneyRouter);
 router.use("/bill", billRouter);
+router.use("/manager", managerRouter);
 
 module.exports = router;

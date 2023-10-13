@@ -12,6 +12,10 @@ const BillSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  manager: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   moneyReceived: {
     type: Number,
     required: true,
