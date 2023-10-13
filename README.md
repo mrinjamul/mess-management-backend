@@ -1,12 +1,14 @@
 # Mess Management System Backend Server
 
-This system is designed to help manage our Mess. It is used to members, attendance, transactions and generate billing per month for members based on their attendance.
+This system is designed to help manage our Mess. It is used to members, attendance, transactions and generate billing per month for members based on their attendance. This is the complete solution to digitalize a traditional food mess system.
 
 Hosted at [akhp](https://akhp.onrender.com/).
 
 you can system up status at [system status](https://6zlj5dx9.status.cron-job.org/).
 
 Mobile App can be found at [AKHP-mobile](https://github.com/manish7479dlp/AKHP)
+
+> Web Frontend is under DEVELOPMENT.
 
 ## Table of Contents
 
@@ -30,8 +32,12 @@ The Mess Management System Backend Server provides a RESTful API for managing me
 - Authentication: Secure API endpoints using authentication to ensure data privacy and integrity.
 - Member Management: Add, update, and remove members from the system.
 - Attendance Tracking: Record attendance for lunch and dinner meals for each member.
+- Menu: manage menu for the week.
 - Expenses tracking: Record expenses for the mess.
-- Billing System: Automatically generate monthly billing reports for each member based on their meal attendance. (Not implemented Yet)
+- Transaction management: Kepp records of all the transactions.
+- Money management: Keep track of all the money which comes in and goes out.
+- Keep track of Manager: Record all the managers which was assigned in each month.
+- Billing System: Automatically generate monthly billing reports for each member based on their meal attendance.
 
 ## 2. Prerequisites
 
@@ -107,6 +113,7 @@ The user management endpoints allow you to create, retrieve, update, and delete 
 - `POST /api/v1/user`: Create a new user.
 - `GET /api/v1/user/:mobile`: Get user details by mobile number.
 - `PUT /api/v1/user/:mobile`: Update user details by mobile number.
+- `PATCH /api/v1/user/:mobile`: Chanage a user's password by old password.
 - `PATCH /api/v1/user/:mobile/forgot-password`: Reset a user's password by mobile number.
 - `DELETE /api/v1/user/:mobile`: Delete a user by mobile number.
 
@@ -125,7 +132,7 @@ The routine management endpoints enable you to create, retrieve, update, and del
 Attendance endpoints allow you to record and retrieve attendance information.
 
 - `GET /api/v1/attendance`: Get a list of all attendance records.
-- `GET /api/v1/attendance/attend`: Get attendance records for a specific meal.
+- `GET /api/v1/attendance/attend`: Get attendance records for a specific day.
 - `GET /api/v1/attendance/:mobile`: Get attendance records by user mobile number.
 
 ### Transaction Management
@@ -141,10 +148,43 @@ The transaction management endpoints enable you to create, retrieve, update, and
 
 Money management endpoints are used to add and spend money, as well as retrieve financial summaries and expenses.
 
-- `POST /api/v1/money/add`: Add money to a user's account.
-- `POST /api/v1/money/spend`: Spend money from a user's account.
+- `POST /api/v1/money/add`: Add money to a mess's account.
+- `POST /api/v1/money/spend`: Spend money from a mess's account.
 - `GET /api/v1/money/summary`: Get a summary of financial transactions.
 - `GET /api/v1/money/expenses`: Get a list of expenses.
+
+### Billing Management
+
+#### Get Bill
+
+- `GET /api/v1/bill`: Get a list of all bills.
+- `GET /api/v1/bill/:id`: Get bill details by ID.
+
+#### Generate Bill and get bill for current month
+
+- `GET /api/v1/bill/get`: Generate a new bill for the ongoing month.
+
+#### Generate Bill
+
+- `GET /api/v1/bill/generate`: Generate a new bill.
+
+#### Delete Bill
+
+- `DELETE /api/v1/bill/:id`: Delete a bill by ID.
+
+### Manager Actions
+
+#### Get Manager
+
+- `GET /api/v1/manager/current`: Get current manager information.
+
+#### Change Manager
+
+- `POST /api/v1/manager/change`: Change the manager.
+
+#### Manager History
+
+- `GET /api/v1/manager/history`: Get the history of manager changes.
 
 ### Health Check
 
@@ -231,9 +271,49 @@ Represents a member of the mess management system.
 - `createdAt` (timestamp): The date and time when the user account was created.
 - `updatedAt` (timestamp): The date and time when the user account was last updated.
 
+### Bill Data Model
+
+#### Bill
+
+Represents a billing record in the mess management system.
+
+**Attributes:**
+
+- `month` (string, required, lowercase): The month for which the bill is generated.
+- `year` (string, required): The year for which the bill is generated.
+- `manager` (reference to User): The manager associated with the bill.
+- `moneyReceived` (number, required): The total amount of money received.
+- `moneySpent` (number, required): The total amount of money spent.
+- `moneySpentOnCredit` (number, required): The amount of money spent on credit.
+- `moneyAvailable` (number, required): The available balance of money.
+- `moneyRequired` (number, required): The required amount of money.
+- `totalMoneySpent` (number, required): The total money spent.
+- `transactions` (array of references to Transaction): The transactions associated with the bill.
+- `usersBill` (array):
+  - `user` (reference to User, required): The user associated with this part of the bill.
+  - `moneyAdvance` (number, required): The advance payment made by the user.
+  - `totalPayable` (number, required): The total amount payable by the user.
+  - `moneyDue` (number, required): The due payment amount of the user.
+  - `duration` (string, required): The duration associated with this part of the bill.
+
+### Manager Data Model
+
+#### Manager
+
+Represents a manager assigned to a specific month in the mess management system.
+
+**Attributes:**
+
+- `index` (number): The unique identifier for the manager.
+- `status` (string, required, lowercase): The status of the manager (e.g., active, inactive).
+- `manager` (reference to User, required): The user who is assigned as the manager for the specified month.
+- `month` (string, required, lowercase): The month for which the manager is assigned.
+- `year` (string, required): The year for which the manager is assigned.
+- `assignedBy` (reference to User): The user who assigned the manager.
+
 ## 8. Billing System
 
-The billing system calculates monthly bills based on meal attendance. Bills are generated at the end of each month.
+The billing system calculates monthly bills based on meal attendance (half month or full month). Bills are generated at the end of each month.
 
 ## 9. Contributing
 

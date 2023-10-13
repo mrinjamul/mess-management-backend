@@ -19,7 +19,7 @@ const {
 const { GetUserByMobile } = require("../../controllers/users");
 
 // Get current manager
-router.get("/get", authenticated, async (req, res, next) => {
+router.get("/current", authenticated, async (req, res, next) => {
   const manager = await GetCurrentManager();
   if (!manager) {
     res.status(constants.http.StatusInternalServerError).json({
