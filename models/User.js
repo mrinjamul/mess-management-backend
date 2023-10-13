@@ -42,6 +42,9 @@ const UserSchema = new mongoose.Schema({
   due: {
     type: Number,
   },
+  isActive: {
+    type: Boolean,
+  },
   role: {
     type: String,
   },

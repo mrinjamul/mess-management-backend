@@ -4,6 +4,7 @@ const Attendance = require("../models/Attendance");
 const { GetSummary } = require("./money");
 const { GetAllTransactionByFilter } = require("./transaction");
 const { GetAllUser } = require("./users");
+const { GetCurrentManager } = require("./manager");
 
 // calculate if user attended for half month or full or none
 const getUserAttendanceFactor = async (user_mobile, month, year) => {
@@ -97,6 +98,21 @@ const GetBillByTime = async (month, year) => {
           updated_at: 1,
         },
       })
+      .populate({
+        path: "manager",
+        select: {
+          id: 1,
+          fullName: 1,
+          year: 1,
+          mobile: 1,
+          advance: 1,
+          due: 1,
+          role: 1,
+          level: 1,
+          created_at: 1,
+          updated_at: 1,
+        },
+      })
       .exec();
   } catch (error) {
     console.log(error);
@@ -104,9 +120,12 @@ const GetBillByTime = async (month, year) => {
 };
 
 // return bill for current month;
-const GenerateBill = async (month, year) => {
+const GenerateBill = async (month, year, regenerate) => {
   try {
     let current = false;
+    if (regenerate) {
+      current = true;
+    }
     // if year not provided
     if (!year) {
       year = new Date().toLocaleString("en-US", { year: "numeric" });
@@ -192,7 +211,13 @@ const GenerateBill = async (month, year) => {
 
     // console.log(totalFactors);
 
-    const bill = {
+    // getCurrentManager
+    const manager = await GetCurrentManager();
+    if (!manager) {
+      console.log("failed to get manager");
+    }
+
+    let bill = {
       month: month,
       year: year,
       moneyReceived: moneyReceived,
@@ -204,6 +229,9 @@ const GenerateBill = async (month, year) => {
       transactions: transactions,
       usersBill: usersBill,
     };
+    if (manager) {
+      bill.manager = manager.manager;
+    }
 
     let currentBill = await Bill.findOne({ month: month, year: year });
     if (!currentBill) {
@@ -219,6 +247,9 @@ const GenerateBill = async (month, year) => {
         // Update currentBill properties with values from bill
         currentBill.month = bill.month;
         currentBill.year = bill.year;
+        if (manager) {
+          currentBill.manager = bill.manager;
+        }
         currentBill.moneyReceived = bill.moneyReceived;
         currentBill.moneySpent = bill.moneySpent;
         currentBill.moneySpentOnCredit = bill.moneySpentOnCredit;
@@ -242,7 +273,39 @@ const GenerateBill = async (month, year) => {
 // return all bills
 const GetAllBill = async () => {
   try {
-    return await Bill.find().lean();
+    return await Bill.find()
+      .populate("transactions")
+      .populate({
+        path: "usersBill.user",
+        select: {
+          id: 1,
+          fullName: 1,
+          year: 1,
+          mobile: 1,
+          advance: 1,
+          due: 1,
+          role: 1,
+          level: 1,
+          created_at: 1,
+          updated_at: 1,
+        },
+      })
+      .populate({
+        path: "manager",
+        select: {
+          id: 1,
+          fullName: 1,
+          year: 1,
+          mobile: 1,
+          advance: 1,
+          due: 1,
+          role: 1,
+          level: 1,
+          created_at: 1,
+          updated_at: 1,
+        },
+      })
+      .exec();
   } catch (error) {
     console.log(error);
   }
@@ -251,7 +314,39 @@ const GetAllBill = async () => {
 // get bill by time
 const GetBillByID = async (id) => {
   try {
-    return await Bill.findById(id).lean();
+    return await Bill.findById(id)
+      .populate("transactions")
+      .populate({
+        path: "usersBill.user",
+        select: {
+          id: 1,
+          fullName: 1,
+          year: 1,
+          mobile: 1,
+          advance: 1,
+          due: 1,
+          role: 1,
+          level: 1,
+          created_at: 1,
+          updated_at: 1,
+        },
+      })
+      .populate({
+        path: "manager",
+        select: {
+          id: 1,
+          fullName: 1,
+          year: 1,
+          mobile: 1,
+          advance: 1,
+          due: 1,
+          role: 1,
+          level: 1,
+          created_at: 1,
+          updated_at: 1,
+        },
+      })
+      .exec();
   } catch (error) {
     console.log(error);
   }

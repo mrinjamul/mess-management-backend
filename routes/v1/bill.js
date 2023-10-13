@@ -17,13 +17,13 @@ const {
 
 // Get all bills for the system
 router.get("/", adminAuthenticated, async (req, res, next) => {
-  const bills = await GetAllBill;
+  const bills = await GetAllBill();
   if (!bills) {
     res.status(constants.http.StatusNotFound).json({
       status: false,
       error: "failed to get bills",
       message: "Not Found",
-      data: {},
+      data: [],
     });
     return;
   }
@@ -44,6 +44,28 @@ router.get("/get", authenticated, async (req, res, next) => {
     res.status(constants.http.StatusNotFound).json({
       status: false,
       error: "failed to get the bill",
+      message: "Not Found",
+      data: {},
+    });
+    return;
+  }
+
+  res.status(constants.http.StatusOK).json({
+    status: true,
+    message: "success",
+    data: bill,
+  });
+});
+
+// generate bill if not current month but still need to generate bill
+router.get("/generate", authenticated, async (req, res, next) => {
+  const { month, year } = req.query;
+
+  const bill = await GenerateBill(month, year, true);
+  if (!bill) {
+    res.status(constants.http.StatusNotFound).json({
+      status: false,
+      error: "failed to generate the bill",
       message: "Not Found",
       data: {},
     });
