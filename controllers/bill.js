@@ -88,6 +88,9 @@ const GetBillByTime = async (month, year) => {
         select: {
           id: 1,
           fullName: 1,
+          firstName: 1,
+          middleName: 1,
+          lastName: 1,
           year: 1,
           mobile: 1,
           advance: 1,
@@ -103,6 +106,9 @@ const GetBillByTime = async (month, year) => {
         select: {
           id: 1,
           fullName: 1,
+          firstName: 1,
+          middleName: 1,
+          lastName: 1,
           year: 1,
           mobile: 1,
           advance: 1,
@@ -280,6 +286,9 @@ const GetAllBill = async () => {
         select: {
           id: 1,
           fullName: 1,
+          firstName: 1,
+          middleName: 1,
+          lastName: 1,
           year: 1,
           mobile: 1,
           advance: 1,
@@ -295,6 +304,9 @@ const GetAllBill = async () => {
         select: {
           id: 1,
           fullName: 1,
+          firstName: 1,
+          middleName: 1,
+          lastName: 1,
           year: 1,
           mobile: 1,
           advance: 1,
@@ -321,6 +333,9 @@ const GetBillByID = async (id) => {
         select: {
           id: 1,
           fullName: 1,
+          firstName: 1,
+          middleName: 1,
+          lastName: 1,
           year: 1,
           mobile: 1,
           advance: 1,
@@ -336,6 +351,9 @@ const GetBillByID = async (id) => {
         select: {
           id: 1,
           fullName: 1,
+          firstName: 1,
+          middleName: 1,
+          lastName: 1,
           year: 1,
           mobile: 1,
           advance: 1,

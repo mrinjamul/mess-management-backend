@@ -90,6 +90,9 @@ const ChangeManger = async (currentManagerMob, newManagerMob) => {
           select: {
             id: 1,
             fullName: 1,
+            firstName: 1,
+            middleName: 1,
+            lastName: 1,
             year: 1,
             mobile: 1,
             advance: 1,
@@ -110,6 +113,9 @@ const ChangeManger = async (currentManagerMob, newManagerMob) => {
       select: {
         id: 1,
         fullName: 1,
+        firstName: 1,
+        middleName: 1,
+        lastName: 1,
         year: 1,
         mobile: 1,
         advance: 1,
@@ -145,6 +151,9 @@ const GetCurrentManager = async () => {
         select: {
           id: 1,
           fullName: 1,
+          firstName: 1,
+          middleName: 1,
+          lastName: 1,
           year: 1,
           mobile: 1,
           advance: 1,
@@ -170,6 +179,9 @@ const GetAllManager = async () => {
         select: {
           id: 1,
           fullName: 1,
+          firstName: 1,
+          middleName: 1,
+          lastName: 1,
           year: 1,
           mobile: 1,
           advance: 1,
