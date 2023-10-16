@@ -12,8 +12,24 @@ const {
   GetCurrentAttendanceByMobile,
 } = require("../../controllers/attendance");
 
+// import utils
+const utils = require("../../helpers/utils");
+
 // Get all attendences
 router.get("/", adminAuthenticated, async function (req, res, next) {
+  // get queries
+  // Parse query parameters with default values
+  const {
+    page = 1,
+    limit = 10,
+    offset = 0, // Default to offset of 0 if not specified
+    dateStart,
+    dateEnd,
+    sortBy = "created_at",
+    orderBy = "desc",
+    ...filters
+  } = req.query;
+
   // get all attendance
   const attendances = await GetAllAttendance();
   if (!attendances) {
@@ -26,10 +42,33 @@ router.get("/", adminAuthenticated, async function (req, res, next) {
     return;
   }
 
+  //  Apply filters dynamically
+  const filteredItems = attendances.filter(
+    utils.getFilter(filters, dateStart, dateEnd)
+  );
+
+  // Sort items based on sortBy and orderBy
+  const sortedItems = filteredItems.sort(utils.getSorter(sortBy, orderBy));
+
+  //  Calculate the skip value based on both page and offset
+  const skip = (page - 1) * limit + parseInt(offset);
+  // Slice the items to get the paginated results
+  const paginatedItems = sortedItems.slice(skip, skip + parseInt(limit));
+
+  // write page info
+  const pageInfo = {
+    currentItems: paginatedItems.length,
+    totalItems: sortedItems.length,
+    currentPage: parseInt(page),
+    totalPages: Math.ceil(sortedItems.length / limit),
+    limit: parseInt(limit),
+    offset: parseInt(offset),
+  };
+
   res.status(constants.http.StatusOK).json({
     status: true,
     message: "success",
-    data: attendances,
+    data: sortedItems,
   });
 });
 
