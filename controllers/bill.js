@@ -1,7 +1,7 @@
 const Bill = require("../models/Bill");
 const Attendance = require("../models/Attendance");
 
-const { GetSummary } = require("./money");
+const { GetSummary, CleanUpAdvance } = require("./money");
 const { GetAllTransactionByFilter } = require("./transaction");
 const { GetAllUser } = require("./users");
 const { GetCurrentManager } = require("./manager");
@@ -269,6 +269,12 @@ const GenerateBill = async (month, year, regenerate) => {
       }
     }
     currentBill = await GetBillByTime(month, year);
+
+    if (currentBill) {
+      // reset advance amount for all members
+      const resp = await CleanUpAdvance();
+      console.log(resp);
+    }
 
     return currentBill;
   } catch (error) {
