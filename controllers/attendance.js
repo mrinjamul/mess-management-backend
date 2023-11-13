@@ -110,6 +110,50 @@ const GetAllAttendanceByDay = async (day) => {
   }
 };
 
+// CreateAttendanceByAdmin: create or update attendance if anyone miss
+const CreateAttendanceByAdmin = async (data) => {
+  try {
+    const { user_mobile, date, lunch, dinner } = data;
+
+    // format data
+    let att = {};
+
+    if (lunch) {
+      att = {
+        user_mobile: user_mobile,
+        date: date,
+        lunch: true,
+      };
+    } else {
+      att = {
+        user_mobile: user_mobile,
+        date: date,
+        dinner: dinner,
+      };
+    }
+
+    var attendance = await Attendance.findOne({
+      user_mobile: user_mobile,
+      date: date,
+    });
+    if (attendance) {
+      // Get the previous entry and set dinner to true
+      return await Attendance.findOneAndUpdate(
+        { user_mobile: user_mobile, date: date },
+        att,
+        { new: true }
+      );
+    } else {
+      // Create a new entry for lunch if the current hour is before 16:00
+      // create attendance
+      attendance = new Attendance(att);
+      return await attendance.save();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // GetCurrentAttendanceByMobile: return current day attendance for a user
 const GetCurrentAttendanceByMobile = async (mobile) => {
   try {
@@ -147,6 +191,7 @@ const DeleteAttendance = async (id) => {};
 
 module.exports = {
   CreateAttendance,
+  CreateAttendanceByAdmin,
   GetAllAttendance,
   GetAllAttendanceByDay,
   GetCurrentAttendanceByMobile,

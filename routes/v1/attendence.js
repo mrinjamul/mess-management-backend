@@ -10,6 +10,7 @@ const {
   GetAllAttendance,
   CreateAttendance,
   GetCurrentAttendanceByMobile,
+  CreateAttendanceByAdmin,
 } = require("../../controllers/attendance");
 
 // import utils
@@ -69,6 +70,38 @@ router.get("/", adminAuthenticated, async function (req, res, next) {
     status: true,
     message: "success",
     data: sortedItems,
+  });
+});
+
+// Create a attendance by Admin
+router.post("/", adminAuthenticated, async function (req, res, next) {
+  const { user_mobile, date, lunch, dinner } = req.body;
+  if (!date || !user_mobile || (!lunch && !dinner)) {
+    res.status(constants.http.StatusBadRequest).json({
+      status: false,
+      error: "Bad request",
+      message: "Missing fields",
+      data: null,
+    });
+    return;
+  }
+
+  const attendance = await CreateAttendanceByAdmin(req.body);
+
+  if (!attendance) {
+    res.status(constants.http.StatusInternalServerError).json({
+      status: false,
+      error: "internal server error",
+      message: "Failed to create attendance",
+      data: null,
+    });
+    return;
+  }
+
+  res.status(constants.http.StatusOK).json({
+    status: true,
+    message: "success",
+    data: attendance,
   });
 });
 
