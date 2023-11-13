@@ -70,9 +70,6 @@ const ChangeManger = async (currentManagerMob, newManagerMob) => {
 
     // get old Manager details
     var oldManager = await Manager.findOne({
-      manager: currentManager._id,
-      month: prevMonth,
-      year: currentYear,
       status: "active",
     });
     if (!oldManager) {
@@ -142,8 +139,6 @@ const GetCurrentManager = async () => {
     const currentYear = new Date().toLocaleString("en-IN", { year: "numeric" });
 
     return await Manager.findOne({
-      month: currentMonth,
-      year: currentYear,
       status: "active",
     })
       .populate({
