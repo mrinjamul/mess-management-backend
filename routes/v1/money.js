@@ -115,7 +115,9 @@ router.get("/summary", authenticated, async (req, res, next) => {
   } else if (month) {
     filter = month;
   } else {
-    filter = new Date().toLocaleString("en-US", { month: "long" }).toLowerCase;
+    filter = new Date()
+      .toLocaleString("en-US", { month: "long" })
+      .toLowerCase();
   }
 
   const summary = await GetSummary(filter);
